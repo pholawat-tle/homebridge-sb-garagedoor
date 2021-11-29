@@ -127,16 +127,18 @@ class SimpleGarageDoorOpener {
         console.log("Finish setting up garagedoor");
     }
 
-    openGarageDoor(callback) {
+    async openGarageDoor(callback) {
         // rpio.write(this.doorSwitchPin, rpio.HIGH);
-        this.device
-            .down()
-            .then(() => {
-                SwitchBot.wait(5000);
-            })
-            .then(() => {
-                this.device.up();
-            });
+
+        this.log("Doing Down");
+        await this.device.down();
+
+        // Wait for 5 seconds
+        this.log("Doing Wait");
+        await SwitchBot.wait(10000);
+        // Put the Bot's arm up (retract the arm)
+        this.log("Doing Up");
+        await this.device.up();
 
         this.log("Opening the garage door for...");
         this.simulateGarageDoorOpening();
