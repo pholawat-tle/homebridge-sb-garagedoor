@@ -144,7 +144,7 @@ class SimpleGarageDoorOpener {
         try {
             this.log("Doing Down");
             await this.device.down();
-
+            await SwitchBot.wait(2000);
             // // Wait for 5 seconds
             // this.log("Doing Wait");
             // await SwitchBot.wait(10000);
@@ -170,6 +170,7 @@ class SimpleGarageDoorOpener {
             // // Put the Bot's arm up (retract the arm)
             this.log("Doing Up");
             await this.device.up();
+            await SwitchBot.wait(2000);
         } catch (err) {}
 
         this.log("Closing the garage door for...");
