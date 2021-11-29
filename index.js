@@ -1,6 +1,5 @@
 "use strict";
 
-const rpio = require("rpio");
 const SwitchBot = new (require("node-switchbot"))();
 
 var Service, Characteristic;
@@ -119,7 +118,7 @@ class SimpleGarageDoorOpener {
     }
 
     openGarageDoor(callback) {
-        rpio.write(this.doorSwitchPin, rpio.HIGH);
+        // rpio.write(this.doorSwitchPin, rpio.HIGH);
         this.device.down();
         SwitchBot.wait(500);
         this.device.up();

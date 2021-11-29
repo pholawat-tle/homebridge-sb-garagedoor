@@ -24,8 +24,7 @@
         "homebridge": ">=0.3.0"
     },
     "dependencies": {
-        "node-switchbot": "github:pholawat-tle/node-switchbot",
-        "rpio": "^0.9.13"
+        "node-switchbot": "github:pholawat-tle/node-switchbot"
     },
     "devDependencies": {},
     "scripts": {}
