@@ -49,76 +49,81 @@ class SimpleGarageDoorOpener {
     }
 
     setupGarageDoorOpenerService(service) {
-        SwitchBot.discover({
-            quick: true,
-            password: this.switchBotPW,
-            id: this.switchBotID,
-        })
-            .then((device_list) => {
-                this.device = device_list[0];
-                if (!this.device) {
-                    console.log("No device was found.");
-                }
-                console.log(
-                    this.device.modelName +
-                        " (" +
-                        this.device.address +
-                        ") was found."
-                );
-                console.log("Connecting...");
-                return this.device.connect();
+        try {
+            SwitchBot.discover({
+                quick: true,
+                password: this.switchBotPW,
+                id: this.switchBotID,
             })
-            .then(() => {
-                console.log("Connected");
-            });
-
-        // rpio.open(this.doorSwitchPin, rpio.OUTPUT, rpio.LOW);
-
-        this.service.setCharacteristic(
-            Characteristic.TargetDoorState,
-            Characteristic.TargetDoorState.CLOSED
-        );
-        this.service.setCharacteristic(
-            Characteristic.CurrentDoorState,
-            Characteristic.CurrentDoorState.CLOSED
-        );
-
-        this.service
-            .getCharacteristic(Characteristic.TargetDoorState)
-            .on("get", (callback) => {
-                var targetDoorState = service.getCharacteristic(
-                    Characteristic.TargetDoorState
-                ).value;
-                if (
-                    targetDoorState === Characteristic.TargetDoorState.OPEN &&
-                    new Date() - this.lastOpened >= this.closeAfter * 1000
-                ) {
-                    this.log("Setting TargetDoorState -> CLOSED");
-                    callback(null, Characteristic.TargetDoorState.CLOSED);
-                } else {
-                    callback(null, targetDoorState);
-                }
-            })
-            .on("set", (value, callback) => {
-                if (value === Characteristic.TargetDoorState.OPEN) {
-                    this.lastOpened = new Date();
-                    switch (
-                        service.getCharacteristic(
-                            Characteristic.CurrentDoorState
-                        ).value
-                    ) {
-                        case Characteristic.CurrentDoorState.CLOSED:
-                        case Characteristic.CurrentDoorState.CLOSING:
-                        case Characteristic.CurrentDoorState.OPEN:
-                            this.openGarageDoor(callback);
-                            break;
-                        default:
-                            callback();
+                .then((device_list) => {
+                    this.device = device_list[0];
+                    if (!this.device) {
+                        console.log("No device was found.");
                     }
-                } else {
-                    callback();
-                }
-            });
+                    console.log(
+                        this.device.modelName +
+                            " (" +
+                            this.device.address +
+                            ") was found."
+                    );
+                    console.log("Connecting...");
+                    return this.device.connect();
+                })
+                .then(() => {
+                    console.log("Connected");
+                });
+
+            // rpio.open(this.doorSwitchPin, rpio.OUTPUT, rpio.LOW);
+
+            this.service.setCharacteristic(
+                Characteristic.TargetDoorState,
+                Characteristic.TargetDoorState.CLOSED
+            );
+            this.service.setCharacteristic(
+                Characteristic.CurrentDoorState,
+                Characteristic.CurrentDoorState.CLOSED
+            );
+
+            this.service
+                .getCharacteristic(Characteristic.TargetDoorState)
+                .on("get", (callback) => {
+                    var targetDoorState = service.getCharacteristic(
+                        Characteristic.TargetDoorState
+                    ).value;
+                    if (
+                        targetDoorState ===
+                            Characteristic.TargetDoorState.OPEN &&
+                        new Date() - this.lastOpened >= this.closeAfter * 1000
+                    ) {
+                        this.log("Setting TargetDoorState -> CLOSED");
+                        callback(null, Characteristic.TargetDoorState.CLOSED);
+                    } else {
+                        callback(null, targetDoorState);
+                    }
+                })
+                .on("set", (value, callback) => {
+                    if (value === Characteristic.TargetDoorState.OPEN) {
+                        this.lastOpened = new Date();
+                        switch (
+                            service.getCharacteristic(
+                                Characteristic.CurrentDoorState
+                            ).value
+                        ) {
+                            case Characteristic.CurrentDoorState.CLOSED:
+                            case Characteristic.CurrentDoorState.CLOSING:
+                            case Characteristic.CurrentDoorState.OPEN:
+                                this.openGarageDoor(callback);
+                                break;
+                            default:
+                                callback();
+                        }
+                    } else {
+                        callback();
+                    }
+                });
+        } catch (err) {
+            console.log(err);
+        }
         console.log("Finish setting up garagedoor");
     }
 
