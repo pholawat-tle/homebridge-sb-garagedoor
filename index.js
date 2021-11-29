@@ -110,7 +110,6 @@ class SimpleGarageDoorOpener {
                             ).value
                         ) {
                             case Characteristic.CurrentDoorState.CLOSED:
-                            case Characteristic.CurrentDoorState.CLOSING:
                             case Characteristic.CurrentDoorState.OPEN:
                                 this.openGarageDoor(callback);
                                 break;
@@ -118,7 +117,18 @@ class SimpleGarageDoorOpener {
                                 callback();
                         }
                     } else {
-                        callback();
+                        switch (
+                            service.getCharacteristic(
+                                Characteristic.CurrentDoorState
+                            ).value
+                        ) {
+                            case Characteristic.CurrentDoorState.OPEN:
+                            case Characteristic.CurrentDoorState.CLOSED:
+                                this.closeGarageDoor(callback);
+                                break;
+                            default:
+                                callback();
+                        }
                     }
                 });
         } catch (err) {
@@ -129,19 +139,39 @@ class SimpleGarageDoorOpener {
 
     async openGarageDoor(callback) {
         // rpio.write(this.doorSwitchPin, rpio.HIGH);
+        try {
+            this.log("Doing Down");
+            await this.device.down();
 
-        this.log("Doing Down");
-        await this.device.down();
-
-        // Wait for 5 seconds
-        this.log("Doing Wait");
-        await SwitchBot.wait(10000);
-        // Put the Bot's arm up (retract the arm)
-        this.log("Doing Up");
-        await this.device.up();
+            // // Wait for 5 seconds
+            // this.log("Doing Wait");
+            // await SwitchBot.wait(10000);
+            // // Put the Bot's arm up (retract the arm)
+            // this.log("Doing Up");
+            // await this.device.up();
+        } catch (err) {}
 
         this.log("Opening the garage door for...");
         this.simulateGarageDoorOpening();
+        callback();
+    }
+
+    async closeGarageDoor(callback) {
+        // rpio.write(this.doorSwitchPin, rpio.HIGH);
+        try {
+            // this.log("Doing Down");
+            // await this.device.down();
+
+            // // Wait for 5 seconds
+            // this.log("Doing Wait");
+            // await SwitchBot.wait(10000);
+            // // Put the Bot's arm up (retract the arm)
+            this.log("Doing Up");
+            await this.device.up();
+        } catch (err) {}
+
+        this.log("Closing the garage door for...");
+        this.simulateGarageDoorClosing();
         callback();
     }
 
@@ -155,22 +185,19 @@ class SimpleGarageDoorOpener {
                 Characteristic.CurrentDoorState,
                 Characteristic.CurrentDoorState.OPEN
             );
-            setTimeout(() => {
-                this.service.setCharacteristic(
-                    Characteristic.CurrentDoorState,
-                    Characteristic.CurrentDoorState.CLOSING
-                );
-                this.service.setCharacteristic(
-                    Characteristic.TargetDoorState,
-                    Characteristic.TargetDoorState.CLOSED
-                );
-                setTimeout(() => {
-                    this.service.setCharacteristic(
-                        Characteristic.CurrentDoorState,
-                        Characteristic.CurrentDoorState.CLOSED
-                    );
-                }, this.simulateTimeClosing * 1000);
-            }, this.simulateTimeOpen * 1000);
+        }, this.simulateTimeOpening * 1000);
+    }
+
+    simulateGarageDoorClosing() {
+        this.service.setCharacteristic(
+            Characteristic.CurrentDoorState,
+            Characteristic.CurrentDoorState.CLOSING
+        );
+        setTimeout(() => {
+            this.service.setCharacteristic(
+                Characteristic.CurrentDoorState,
+                Characteristic.CurrentDoorState.CLOSED
+            );
         }, this.simulateTimeOpening * 1000);
     }
 }
