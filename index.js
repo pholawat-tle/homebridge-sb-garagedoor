@@ -109,6 +109,7 @@ class SimpleGarageDoorOpener {
                                 Characteristic.CurrentDoorState
                             ).value
                         ) {
+                            case Characteristic.CurrentDoorState.CLOSING:
                             case Characteristic.CurrentDoorState.CLOSED:
                             case Characteristic.CurrentDoorState.OPEN:
                                 this.openGarageDoor(callback);
@@ -122,6 +123,7 @@ class SimpleGarageDoorOpener {
                                 Characteristic.CurrentDoorState
                             ).value
                         ) {
+                            case Characteristic.CurrentDoorState.OPENING:
                             case Characteristic.CurrentDoorState.OPEN:
                             case Characteristic.CurrentDoorState.CLOSED:
                                 this.closeGarageDoor(callback);
