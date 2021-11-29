@@ -53,20 +53,24 @@ class SimpleGarageDoorOpener {
             quick: true,
             password: this.switchBotPW,
             id: this.switchBotID,
-        }).then((device_list) => {
-            this.device = device_list[0];
-            if (!this.device) {
-                console.log("No device was found.");
-            }
-            console.log(
-                this.device.modelName +
-                    " (" +
-                    this.device.address +
-                    ") was found."
-            );
-            console.log("Connecting...");
-            return this.device.connect();
-        });
+        })
+            .then((device_list) => {
+                this.device = device_list[0];
+                if (!this.device) {
+                    console.log("No device was found.");
+                }
+                console.log(
+                    this.device.modelName +
+                        " (" +
+                        this.device.address +
+                        ") was found."
+                );
+                console.log("Connecting...");
+                return this.device.connect();
+            })
+            .then(() => {
+                console.log("Connected");
+            });
 
         // rpio.open(this.doorSwitchPin, rpio.OUTPUT, rpio.LOW);
 
@@ -115,6 +119,7 @@ class SimpleGarageDoorOpener {
                     callback();
                 }
             });
+        console.log("Finish setting up garagedoor");
     }
 
     openGarageDoor(callback) {
