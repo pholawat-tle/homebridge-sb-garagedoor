@@ -83,7 +83,7 @@ class SimpleGarageDoorOpener {
             Characteristic.CurrentDoorState.CLOSED
         );
 
-        service
+        this.service
             .getCharacteristic(Characteristic.TargetDoorState)
             .on("get", (callback) => {
                 var targetDoorState = service.getCharacteristic(
