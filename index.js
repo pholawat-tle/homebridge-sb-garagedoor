@@ -129,9 +129,14 @@ class SimpleGarageDoorOpener {
 
     openGarageDoor(callback) {
         // rpio.write(this.doorSwitchPin, rpio.HIGH);
-        this.device.down();
-        SwitchBot.wait(500);
-        this.device.up();
+        this.device
+            .down()
+            .then(() => {
+                SwitchBot.wait(5000);
+            })
+            .then(() => {
+                this.device.up();
+            });
 
         this.log("Opening the garage door for...");
         this.simulateGarageDoorOpening();
